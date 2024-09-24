@@ -1,0 +1,84 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip> // For std::setw
+#include <limits>  // For std::numeric_limits
+
+using namespace std;
+
+// Function to clear the console (platform dependent)
+#ifdef _WIN32
+#include <windows.h>
+void clearConsole() { system("cls"); }
+#else
+void clearConsole() { system("clear"); }
+#endif
+
+struct Question {
+    string question;
+    vector<string> options;
+    int answer; // index of the correct answer
+};
+
+void displayHeader() {
+    clearConsole();
+    cout << setw(50) << setfill('-') << "" << endl;
+    cout << "   Welcome to the Quiz Game!" << endl;
+    cout << setw(50) << setfill('-') << "" << endl;
+}
+
+void displayQuestion(const Question& q, int questionNumber) {
+    cout << "\n" << setw(50) << setfill('=') << "" << endl;
+    cout << "Question " << questionNumber << ": " << q.question << endl;
+    for (int i = 0; i < q.options.size(); ++i) {
+        cout << setw(4) << i + 1 << ". " << q.options[i] << endl;
+    }
+    cout << setw(50) << setfill('=') << "" << endl;
+}
+
+int main() {
+    vector<Question> quiz = {
+        {"What is the capital of France?", {"Berlin", "Madrid", "Paris", "Rome"}, 2},
+        {"What is 2 + 2?", {"3", "4", "5", "6"}, 1},
+        {"Which planet is known as the Red Planet?", {"Earth", "Mars", "Jupiter", "Saturn"}, 1},
+        {"Who wrote 'Hamlet'?", {"Charles Dickens", "Mark Twain", "William Shakespeare", "Jane Austen"}, 2},
+        {"What is the largest ocean on Earth?", {"Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"}, 3}
+    };
+
+    int score = 0;
+    displayHeader();
+
+    for (int i = 0; i < quiz.size(); ++i) {
+        displayQuestion(quiz[i], i + 1);
+        int userAnswer;
+
+        while (true) {
+            cout << "Your answer (1-" << quiz[i].options.size() << "): ";
+            cin >> userAnswer;
+
+            if (cin.fail() || userAnswer < 1 || userAnswer > quiz[i].options.size()) {
+                cin.clear(); // clear the error state
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard input
+                cout << "Invalid input. Please enter a number between 1 and " << quiz[i].options.size() << "." << endl;
+            } else {
+                break; // valid input
+            }
+        }
+
+        // Provide feedback and increment score
+        if (userAnswer - 1 == quiz[i].answer) {
+            cout << "\nCorrect! 🎉" << endl;
+            score++;
+        } else {
+            cout << "\nWrong! The correct answer is: " << quiz[i].options[quiz[i].answer] << endl;
+        }
+        cout << setw(50) << setfill('-') << "" << endl;
+    }
+
+    // Final score
+    cout << "\nYour total score: " << score << "/" << quiz.size() << endl;
+    cout << "Thank you for playing!" << endl;
+    cout << setw(50) << setfill('-') << "" << endl;
+
+    return 0;
+}
